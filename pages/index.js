@@ -26,6 +26,7 @@ export default function Home({ posts }) {
 }
 
 
+
 export async function getStaticProps(context) {
   const posts = (await getPosts()) || [];
  return {
