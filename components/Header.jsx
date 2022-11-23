@@ -1,17 +1,25 @@
-import React, {useContext} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import Link from 'next/link'
+import { getCategories } from '../services';
 
-
-const categories = [{name: 'React', slug:'react'}, {name: 'Blockchain', slug:'web 3.0'}]
 
 const Header = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    getCategories().then((newCategories) => {
+      setCategories(newCategories);
+    });
+  }, []);
+
+  
   return (
     <div className="container mx-auto px-10 mb-8">
       <div className="border-b w-full inline-block border-yellow-400 py-8">
         <div className="md:float-left block">
           <Link href="/">
-            <span className="cursor-pointer font-bold text-4xl text-yellow-500">
-              Village Men
+            <span className="cursor-pointer font-mono font-bold text-4xl text-yellow-500">
+              VILLAGE MEN
             </span>
           </Link>
         </div>
