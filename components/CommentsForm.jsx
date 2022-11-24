@@ -1,21 +1,32 @@
 import React, {useRef, useState, useEffect} from 'react'
+import { submitComment } from '../services';
+
 
 const CommentsForm = ({slug}) => {
   const [error, setError] = useState(false);
   const [localStorage, setLocalStorage] = useState(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [formData, setFormData] = useState({ name: null, email: null, comment: null, storeData: false });
   const commentEl= useRef();
   const nameEl= useRef();
   const emailEl= useRef();
   const storeDataEl= useRef();
 
   
+useEffect(()=>{
+  nameEl.current.value = window.localStorage.getItem('name');
+  emailEl.current.value = window.localStorage.getItem('email');
+},[])
+
+
 const handleCommentSubmission = () =>{
   setError(false);
   const { value: comment } = commentEl.current;
   const { value: name } = nameEl.current;
   const { value: email } = emailEl.current;
+  const { checked: storeData } = storeDataEl.current;
+  
+
+
 
   if(!comment || !name || !email) {
     setError(true);
@@ -23,11 +34,26 @@ const handleCommentSubmission = () =>{
   }
 
   const commentObj = { name, email, comment, slug};
+
+  if(storeData){
+      window.localStorage.setItem('name', name);
+      window.localStorage.setItem('email', email);
+     }   else{
+      window.localStorage.removeItem('name', name);
+      window.localStorage.removeItem('email', email);
+    }
+ 
+    submitComment(commentObj).then((res) =>{
+      setShowSuccessMessage(true);
+      setTimeout(()=>{
+        setShowSuccessMessage(false);
+      }, 3000);
+    })
 }
 
   return (
     <div className="bg-gray-200 shadow-lg rounded-lg p-8 pb-12 mb-8">
-      <h3 className="text-xl mb-8 font-semibold border-b pb-4">CommentForm</h3>
+      <h3 className="text-xl mb-8 font-semibold border-b pb-4">Leave Comments</h3>
       <div className="grid grid-cols-1 gap-4 mb-4">
         <textarea ref={commentEl} className="p-4 outline-none w-full rounded-lg focus:ring-2 focus:ring-gray-200 bg-black text-gray-500"
         placeholder="comment"
@@ -38,7 +64,7 @@ const handleCommentSubmission = () =>{
         placeholder="Name" name="name"/>
         </div>      
         <div className="grid grid-cols-1 gap-4 mb-4">
-        <input type="text" ref={nameEl} className="py-2 px-4 outline-none w-full rounded-lg focus:ring-2 focus:ring-gray-200 bg-black text-gray-500"
+        <input type="text" ref={emailEl} className="py-2 px-4 outline-none w-full rounded-lg focus:ring-2 focus:ring-gray-200 bg-black text-gray-500"
         placeholder="Email" name="email"/>
         </div>
         <div className="grid grid-cols-1 gap-4 m-4">
